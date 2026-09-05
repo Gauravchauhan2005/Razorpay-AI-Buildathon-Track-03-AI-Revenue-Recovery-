@@ -1,11 +1,6 @@
 # 💳 Razorpay AI Revenue Recovery Agent
 ### 🏆 Built for Razorpay AI Buildathon — Track 03: AI Revenue Recovery
 
-> **Track 03 Prompt**: *"Build an agent that detects revenue at risk, determines the right intervention, and executes a bounded recovery workflow: from payment failures and checkout abandonment to overdue receivables."*  
-> **The Bar**: *"Don’t just identify the problem. Show measured money recovered across a batch, with compliant escalation, stopping rules, and an audit trail."*
-
----
-
 ## 🌟 Key Highlights & Buildathon Criteria Met
 
 | Buildathon Requirement | How We Solved It | Verification |
