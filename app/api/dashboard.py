@@ -227,6 +227,17 @@ def run_batch_benchmark(
         Payment.recovery_status.in_(["eligible", None])
     ).limit(batch_size).all()
 
+    # If already benchmarked or no eligible records left, evaluate across all failure-origin transactions
+    if len(failed_payments) == 0:
+        failed_payments = db.query(Payment).filter(
+            Payment.failure_reason.isnot(None)
+        ).limit(batch_size).all()
+        # Reset them to failed/eligible for fresh benchmark run
+        for p in failed_payments:
+            p.status = "failed"
+            p.recovery_status = "eligible"
+        db.commit()
+
     total_batch = len(failed_payments)
     total_at_risk = sum(p.amount for p in failed_payments)
     
@@ -349,3 +360,15 @@ def run_batch_benchmark(
             f"across {dispatched_count} bounded interventions, stopping {stopped_count} unrecoverable/ineligible attempts."
         )
     }
+
+
+@router.post("/reset-batch")
+def reset_failed_payments(db: Session = Depends(get_db)):
+    """Resets all failure-origin payments back to eligible for new demo evaluations."""
+    payments = db.query(Payment).filter(Payment.failure_reason.isnot(None)).all()
+    count = len(payments)
+    for p in payments:
+        p.status = "failed"
+        p.recovery_status = "eligible"
+    db.commit()
+    return {"status": "reset_complete", "reset_count": count}

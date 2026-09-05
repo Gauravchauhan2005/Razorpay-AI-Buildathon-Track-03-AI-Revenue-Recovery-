@@ -236,7 +236,17 @@ def main() -> None:
         b_col1, b_col2 = st.columns([1, 2])
         with b_col1:
             batch_sz = st.slider("Select Evaluation Batch Size:", min_value=10, max_value=150, value=50, step=10)
-            run_btn = st.button("▶️ Run Autonomous Batch Benchmark", type="primary")
+            btn_sub1, btn_sub2 = st.columns(2)
+            with btn_sub1:
+                run_btn = st.button("▶️ Run Benchmark", type="primary")
+            with btn_sub2:
+                reset_btn = st.button("🔄 Reset Data", type="secondary")
+
+        if reset_btn:
+            resp_reset = requests.post(f"{API_BASE_URL}/api/v1/analytics/reset-batch")
+            if resp_reset.status_code == 200:
+                st.success("✅ Dataset reset! All failed payments are now eligible for fresh benchmark runs.")
+                st.rerun()
 
         if run_btn:
             with st.spinner(f"Evaluating {batch_sz} failed transactions through agent pipeline..."):
